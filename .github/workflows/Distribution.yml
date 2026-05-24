@@ -27,23 +27,22 @@ jobs:
       extra_toolchains: "rust"
       opt_in_archs: "windows_amd64"
 
-  upload-lance-extension:
-    name: Upload lance.duckdb_extension
+  extract-lance-extension:
+    name: Extract lance.duckdb_extension
     needs: duckdb-stable-build
     runs-on: ubuntu-latest
     steps:
-      - name: Download build-release artifact from previous job
+      - name: Download build-release artifact
         uses: actions/download-artifact@v4
         with:
-          # this name must match what the reusable workflow uses;
-          # from your logs: build-release-<hash>.zip
-          # so we take all artifacts and then pick the file we want
+          # this matches the name you see in the logs: build-release-<hash>.zip
+          # download-artifact ignores the .zip suffix; name is 'build-release-*'
+          # so we just download ALL artifacts to a folder and then glob inside
           path: artifacts
 
-      - name: Find and upload lance.duckdb_extension
+      - name: Upload only lance.duckdb_extension
         uses: actions/upload-artifact@v4
         with:
           name: lance-windows_amd64-extension
           path: |
-            **/extension/lance/lance.duckdb_extension
-
+            artifacts/**/extension/lance/lance.duckdb_extension
